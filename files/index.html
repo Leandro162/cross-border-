@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="跨境导航站 — 全球跨境电商工具与资源的权威目录，连接您与核心工具和服务。" />
+  <meta name="keywords" content="跨境电商,跨境导航,出海工具,全球支付,跨境物流,海外营销" />
+  <title>跨境导航站 — Cross-border Navigation Station</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== Mobile Overlay ===== -->
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- ===== Header ===== -->
+  <header class="site-header" role="banner">
+    <div class="logo-area">
+      <div class="logo-icon" aria-hidden="true">🌐</div>
+      <div class="logo-text">Cross-border<br><span>Navigation Station</span></div>
+    </div>
+
+    <div class="search-wrap" role="search">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+      </svg>
+      <input
+        type="search"
+        id="search-input"
+        placeholder="搜索资源、工具、平台..."
+        autocomplete="off"
+        aria-label="搜索资源"
+      />
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-submit" type="button" onclick="alert('Submit URL 功能即将上线！')">Submit URL</button>
+      <button class="btn-mobile-menu" id="btn-mobile-menu" type="button" aria-label="打开菜单" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Body Layout ===== -->
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="分类导航">
+      <ul class="sidebar-nav" id="sidebar-nav" role="list"></ul>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content" id="main-content" role="main">
+
+      <!-- Hero -->
+      <section class="hero" aria-label="站点介绍">
+        <div class="hero-content">
+          <h1>Cross-border Navigation Station</h1>
+          <p>全球跨境电商成功的权威资源目录，连接您与核心工具、平台和服务。</p>
+        </div>
+      </section>
+
+      <!-- Sort Bar -->
+      <div class="sort-bar" role="toolbar" aria-label="排序与筛选">
+        <span class="result-count" id="result-count" aria-live="polite">加载中...</span>
+        <label for="sort-select">排序方式</label>
+        <select id="sort-select" aria-label="排序方式">
+          <option value="default">默认排序</option>
+          <option value="views">按浏览量排序</option>
+        </select>
+      </div>
+
+      <!-- Dynamic Content Area -->
+      <div id="content-area" aria-live="polite" aria-label="资源列表"></div>
+
+    </main>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer" role="contentinfo">
+    <div>
+      © 2024 Cross-border Navigation Station. All rights reserved.
+      &nbsp;|&nbsp;
+      <a href="/privacy" rel="noopener">Privacy Policy</a>
+      &nbsp;|&nbsp;
+      <a href="/terms" rel="noopener">Terms of Service</a>
+      &nbsp;|&nbsp;
+      <a href="mailto:contact@cbnavigation.com" rel="noopener">Contact Us</a>
+    </div>
+    <!-- 备案号预留区域 -->
+    <div class="footer-icp">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+        粤ICP备XXXXXXXX号
+      </a>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
