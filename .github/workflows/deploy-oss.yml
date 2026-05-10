@@ -3,7 +3,7 @@ name: 🚀 Deploy to Aliyun OSS + CDN
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:   # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to OSS
-        uses: yunser/aliyun-oss-action@v1
+        uses: geekyouth/aliyun-oss-action@v1
         with:
           accessKeyId: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
           accessKeySecret: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
