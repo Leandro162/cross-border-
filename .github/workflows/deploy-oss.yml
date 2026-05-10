@@ -3,7 +3,7 @@ name: 🚀 Deploy to Aliyun OSS + CDN
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch:  # 支持手动触发
 
 jobs:
   deploy:
@@ -14,11 +14,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to OSS
-        uses: geekyouth/aliyun-oss-action@v1
+        uses: taixw2/deploy-aliyun-oss@v1
         with:
-          accessKeyId: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
-          accessKeySecret: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
-          bucket: cross-border-nav
           region: oss-cn-hangzhou
-          localPath: ./
-          ossPath: /
+          access-key-id: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
+          bucket: cross-border-nav
+          local-path: ./
+          remote-path: /
