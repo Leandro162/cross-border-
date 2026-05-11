@@ -3,7 +3,7 @@ name: 🚀 Deploy to Aliyun OSS + CDN
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:   # 支持手动触发
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -13,12 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install ossutil
+      - name: Download and setup ossutil
         run: |
-          wget http://gosspublic.alicdn.com/ossutil/install.sh -O install.sh
-          chmod +x install.sh
-          ./install.sh
-          ossutil --version
+          curl -sSL http://gosspublic.alicdn.com/ossutil/install.sh | bash
+          sudo mv ossutil64 /usr/local/bin/ossutil
+          sudo chmod +x /usr/local/bin/ossutil
 
       - name: Configure ossutil
         run: |
@@ -27,8 +26,8 @@ jobs:
                          -k ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }} \
                          -c .ossutilconfig
 
-      - name: Sync files to OSS
+      - name: Sync to OSS
         run: |
           ossutil cp -r --update --force ./ oss://cross-border-nav/ \
             --meta Cache-Control:no-cache,public \
-            --exclude ".git/" --exclude ".github/" --exclude "*.md"
+            --exclude ".git/" --exclude ".github/" --exclude "*.md" --exclude "README.md"
