@@ -3,7 +3,7 @@ name: 🚀 Deploy to Aliyun OSS + CDN
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # 支持手动触发
+  workflow_dispatch:   # 支持手动触发
 
 jobs:
   deploy:
@@ -13,12 +13,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to OSS
-        uses: taixw2/deploy-aliyun-oss@v1
-        with:
-          region: oss-cn-hangzhou
-          access-key-id: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
-          access-key-secret: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
-          bucket: cross-border-nav
-          local-path: ./
-          remote-path: /
+      - name: Install ossutil
+        run: |
+          wget http://gosspublic.alicdn.com/ossutil/install.sh -O install.sh
+          chmod +x install.sh
+          ./install.sh
+          ossutil --version
+
+      - name: Configure ossutil
+        run: |
+          ossutil config -e oss-cn-hangzhou.aliyuncs.com \
+                         -i ${{ secrets.ALI_OSS_ACCESS_KEY_ID }} \
+                         -k ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }} \
+                         -c .ossutilconfig
+
+      - name: Sync files to OSS
+        run: |
+          ossutil cp -r --update --force ./ oss://cross-border-nav/ \
+            --meta Cache-Control:no-cache,public \
+            --exclude ".git/" --exclude ".github/" --exclude "*.md"
