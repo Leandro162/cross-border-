@@ -13,18 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download ossutil
-        run: |
-          wget -q https://gosspublic.alicdn.com/ossutil/ossutil64 -O ossutil64
-          chmod +x ossutil64
-          sudo mv ossutil64 /usr/local/bin/ossutil
-
       - name: Deploy to OSS
-        env:
-          ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
-          SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
-        run: |
-          ossutil config -e oss-cn-hangzhou.aliyuncs.com -i $ID -k $SECRET -c .ossutilconfig
-          ossutil cp -r --update --force ./ oss://cross-border-nav/ \
-            --meta Cache-Control:no-cache,public \
-            --exclude ".git/" --exclude ".github/" --exclude "*.md"
+        uses: taixw2/deploy-aliyun-oss@v1
+        with:
+          access-key-id: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
+          bucket: cross-border-nav
+          region: oss-cn-hangzhou
+          local-path: ./
+          remote-path: /
