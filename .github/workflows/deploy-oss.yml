@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to OSS (Python SDK)
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -21,26 +21,28 @@ jobs:
       - name: Install OSS SDK
         run: pip install oss2
 
-      - name: Upload files to OSS
+      - name: Upload to OSS
         env:
           OSS_KEY_ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
           OSS_KEY_SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
         run: |
           python - << 'EOF'
-import oss2, os, sys
-auth = oss2.Auth(os.getenv('OSS_KEY_ID'), os.getenv('OSS_KEY_SECRET'))
-bucket = oss2.Bucket(auth, 'http://oss-cn-hangzhou.aliyuncs.com', 'cross-border-nav')
+import oss2
+import os
 
-def upload_dir(local_dir='.'):
+auth = oss2.Auth(os.getenv('OSS_KEY_ID'), os.getenv('OSS_KEY_SECRET'))
+bucket = oss2.Bucket(auth, 'oss-cn-hangzhou.aliyuncs.com', 'cross-border-nav')
+
+def upload_directory(local_dir='.'):
     for root, dirs, files in os.walk(local_dir):
-        for f in files:
-            if f.endswith('.md') or '.git' in root or '.github' in root:
+        for file in files:
+            if file.endswith(('.md', '.git', '.github')) or '.git' in root or '.github' in root:
                 continue
-            local_path = os.path.join(root, f)
+            local_path = os.path.join(root, file)
             oss_path = os.path.relpath(local_path, local_dir).replace('\\', '/')
             bucket.put_object_from_file(oss_path, local_path)
-            print(f'✓ {oss_path}')
+            print(f'Uploaded: {oss_path}')
 
-upload_dir()
+upload_directory()
 print('🎉 部署完成！')
 EOF
