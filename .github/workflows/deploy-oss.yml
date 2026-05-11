@@ -10,15 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Deploy to OSS
-        uses: taixw2/deploy-aliyun-oss@v1
+      - name: Deploy with rclone
+        uses: wei/rclone@v1
         with:
-          access-key-id: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
-          access-key-secret: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
-          bucket: cross-border-nav
-          region: oss-cn-hangzhou
-          local-path: ./
-          remote-path: /
+          args: sync . oss:cross-border-nav --progress
+        env:
+          RCLONE_CONFIG_OSS_TYPE: s3
+          RCLONE_CONFIG_OSS_PROVIDER: alibaba
+          RCLONE_CONFIG_OSS_ACCESS_KEY_ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_OSS_SECRET_ACCESS_KEY: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
+          RCLONE_CONFIG_OSS_ENDPOINT: oss-cn-hangzhou.aliyuncs.com
+          RCLONE_CONFIG_OSS_BUCKET: cross-border-nav
