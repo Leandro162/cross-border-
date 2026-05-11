@@ -10,14 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: fangbinwei/aliyun-oss-action@v1
-        with:
-          accessKeyId: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
-          accessKeySecret: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
-          bucket: cross-border-nav
-          region: oss-cn-hangzhou
-          localPath: ./
-          remotePath: /
-          exclude: ".git/|.github/|*.md"
+      - name: Install ossutil
+        run: |
+          wget -q https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil64 -O ossutil64
+          chmod +x ossutil64
+          sudo mv ossutil64 /usr/local/bin/ossutil
+
+      - name: Deploy to OSS
+        env:
+          ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
+          SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
+        run: |
+          ossutil config -e oss-cn-hangzhou.aliyuncs.com -i $ID -k $SECRET -c .ossutilconfig
+          ossutil cp -r --update --force ./ oss://cross-border-nav/ \
+            --meta Cache-Control:no-cache,public \
+            --exclude ".git/" --exclude ".github/" --exclude "*.md"
