@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Aliyun OSS + CDN
+name: 🚀 Deploy to Aliyun OSS
 
 on:
   push:
@@ -13,21 +13,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download and setup ossutil
-        run: |
-          curl -sSL http://gosspublic.alicdn.com/ossutil/install.sh | bash
-          sudo mv ossutil64 /usr/local/bin/ossutil
-          sudo chmod +x /usr/local/bin/ossutil
+      - name: Deploy to OSS (Python SDK)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-      - name: Configure ossutil
-        run: |
-          ossutil config -e oss-cn-hangzhou.aliyuncs.com \
-                         -i ${{ secrets.ALI_OSS_ACCESS_KEY_ID }} \
-                         -k ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }} \
-                         -c .ossutilconfig
+      - name: Install OSS SDK
+        run: pip install oss2
 
-      - name: Sync to OSS
+      - name: Upload files to OSS
+        env:
+          OSS_KEY_ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
+          OSS_KEY_SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
         run: |
-          ossutil cp -r --update --force ./ oss://cross-border-nav/ \
-            --meta Cache-Control:no-cache,public \
-            --exclude ".git/" --exclude ".github/" --exclude "*.md" --exclude "README.md"
+          python - << 'EOF'
+import oss2, os, sys
+auth = oss2.Auth(os.getenv('OSS_KEY_ID'), os.getenv('OSS_KEY_SECRET'))
+bucket = oss2.Bucket(auth, 'http://oss-cn-hangzhou.aliyuncs.com', 'cross-border-nav')
+
+def upload_dir(local_dir='.'):
+    for root, dirs, files in os.walk(local_dir):
+        for f in files:
+            if f.endswith('.md') or '.git' in root or '.github' in root:
+                continue
+            local_path = os.path.join(root, f)
+            oss_path = os.path.relpath(local_path, local_dir).replace('\\', '/')
+            bucket.put_object_from_file(oss_path, local_path)
+            print(f'✓ {oss_path}')
+
+upload_dir()
+print('🎉 部署完成！')
+EOF
