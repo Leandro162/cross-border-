@@ -13,9 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install ossutil
+      - name: Download ossutil
         run: |
-          wget -q https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil64 -O ossutil64
+          wget -q https://gosspublic.alicdn.com/ossutil/ossutil64 -O ossutil64
           chmod +x ossutil64
           sudo mv ossutil64 /usr/local/bin/ossutil
 
