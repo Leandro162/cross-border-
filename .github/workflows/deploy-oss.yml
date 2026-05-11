@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Aliyun OSS
+name: Deploy to Aliyun OSS
 
 on:
   push:
@@ -8,41 +8,31 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Deploy to OSS
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install OSS SDK
-        run: pip install oss2
+      - run: pip install oss2
 
-      - name: Upload to OSS
+      - name: Upload files
         env:
-          OSS_KEY_ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
-          OSS_KEY_SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
+          ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
+          SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
         run: |
           python - << 'EOF'
-import oss2
-import os
-
-auth = oss2.Auth(os.getenv('OSS_KEY_ID'), os.getenv('OSS_KEY_SECRET'))
+import oss2, os
+auth = oss2.Auth(os.getenv('ID'), os.getenv('SECRET'))
 bucket = oss2.Bucket(auth, 'oss-cn-hangzhou.aliyuncs.com', 'cross-border-nav')
-
-def upload_directory(local_dir='.'):
-    for root, dirs, files in os.walk(local_dir):
-        for file in files:
-            if file.endswith(('.md', '.git', '.github')) or '.git' in root or '.github' in root:
-                continue
-            local_path = os.path.join(root, file)
-            oss_path = os.path.relpath(local_path, local_dir).replace('\\', '/')
-            bucket.put_object_from_file(oss_path, local_path)
-            print(f'Uploaded: {oss_path}')
-
-upload_directory()
-print('🎉 部署完成！')
+for root, dirs, files in os.walk('.'):
+    for f in files:
+        if f.endswith('.md') or '.git' in root or '.github' in root: continue
+        local = os.path.join(root, f)
+        oss_path = os.path.relpath(local, '.').replace('\\', '/')
+        bucket.put_object_from_file(oss_path, local)
+        print('Uploaded:', oss_path)
+print('✅ 部署完成')
 EOF
