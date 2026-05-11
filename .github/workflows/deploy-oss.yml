@@ -8,31 +8,24 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Deploy to OSS
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Install ossutil
+        run: |
+          wget -q https://gosspublic.alicdn.com/ossutil/install.sh -O install.sh
+          bash install.sh
+          sudo mv ossutil64 /usr/local/bin/ossutil
+          sudo chmod +x /usr/local/bin/ossutil
 
-      - run: pip install oss2
-
-      - name: Upload files
+      - name: Deploy
         env:
           ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
           SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
         run: |
-          python - << 'EOF'
-import oss2, os
-auth = oss2.Auth(os.getenv('ID'), os.getenv('SECRET'))
-bucket = oss2.Bucket(auth, 'oss-cn-hangzhou.aliyuncs.com', 'cross-border-nav')
-for root, dirs, files in os.walk('.'):
-    for f in files:
-        if f.endswith('.md') or '.git' in root or '.github' in root: continue
-        local = os.path.join(root, f)
-        oss_path = os.path.relpath(local, '.').replace('\\', '/')
-        bucket.put_object_from_file(oss_path, local)
-        print('Uploaded:', oss_path)
-print('✅ 部署完成')
-EOF
+          ossutil config -e oss-cn-hangzhou.aliyuncs.com -i $ID -k $SECRET -c .ossutilconfig
+          ossutil cp -r --update --force ./ oss://cross-border-nav/ \
+            --meta Cache-Control:no-cache,public \
+            --exclude ".git/" --exclude ".github/" --exclude "*.md"
