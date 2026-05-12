@@ -50,7 +50,7 @@ jobs:
         run: |
           for ext in html css js; do
             ossutil set-meta oss://cross-border-nav/ \
-              Cache-Control "no-cache, no-store, must-revalidate" \
+              "Cache-Control:no-cache,no-store,must-revalidate" \
               --recursive \
               --include "*.${ext}" \
               --update
@@ -61,7 +61,7 @@ jobs:
         run: |
           for ext in png jpg jpeg gif webp svg ico woff woff2 ttf eot; do
             ossutil set-meta oss://cross-border-nav/ \
-              Cache-Control "public, max-age=2592000" \
+              "Cache-Control:public,max-age=2592000" \
               --recursive \
               --include "*.${ext}" \
               --update
@@ -71,7 +71,7 @@ jobs:
       - name: Set Cache-Control for JSON files
         run: |
           ossutil set-meta oss://cross-border-nav/ \
-            Cache-Control "public, max-age=300" \
+            "Cache-Control:public,max-age=300" \
             --recursive \
             --include "*.json" \
             --update
