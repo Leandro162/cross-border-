@@ -2,24 +2,98 @@ name: Deploy to Aliyun OSS
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
+  workflow_dispatch: # 支持手动触发
 
 jobs:
   deploy:
+    name: Sync to OSS
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # 1. 拉取代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Deploy with rclone
-        uses: wei/rclone@v1
-        with:
-          args: sync . oss:cross-border-nav --progress
-        env:
-          RCLONE_CONFIG_OSS_TYPE: s3
-          RCLONE_CONFIG_OSS_PROVIDER: alibaba
-          RCLONE_CONFIG_OSS_ACCESS_KEY_ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
-          RCLONE_CONFIG_OSS_SECRET_ACCESS_KEY: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
-          RCLONE_CONFIG_OSS_ENDPOINT: oss-cn-hangzhou.aliyuncs.com
-          RCLONE_CONFIG_OSS_BUCKET: cross-border-nav
+      # 2. 安装阿里云 ossutil
+      - name: Install ossutil
+        run: |
+          curl -o ossutil.zip https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil-v1.7.19-linux-amd64.zip
+          unzip ossutil.zip
+          sudo mv ossutil-v1.7.19-linux-amd64/ossutil /usr/local/bin/ossutil
+          ossutil version
+
+      # 3. 配置 ossutil 鉴权
+      - name: Configure ossutil
+        run: |
+          ossutil config \
+            --access-key-id "${{ secrets.ALI_OSS_ACCESS_KEY_ID }}" \
+            --access-key-secret "${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}" \
+            --endpoint "oss-cn-hangzhou.aliyuncs.com"
+
+      # 4. 同步静态文件到 OSS（排除无关文件）
+      #    --delete 会删除 OSS 上本地不存在的文件，保持完全同步
+      - name: Sync files to OSS
+        run: |
+          ossutil sync . oss://cross-border-nav/ \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "*.md" \
+            --exclude "*.sh" \
+            --exclude ".gitignore" \
+            --exclude ".DS_Store" \
+            --jobs 10
+
+      # 5. 为 HTML 文件单独设置短缓存（no-cache，确保用户每次获取最新版本）
+      - name: Set Cache-Control for HTML files
+        run: |
+          ossutil set-meta oss://cross-border-nav/ \
+            "Cache-Control:no-cache, no-store, must-revalidate" \
+            --recursive \
+            --include "*.html" \
+            --update
+
+      # 6. 为 CSS / JS 文件设置短缓存（文件名固定不变，不能用长缓存）
+      - name: Set Cache-Control for CSS and JS files
+        run: |
+          ossutil set-meta oss://cross-border-nav/ \
+            "Cache-Control:no-cache, no-store, must-revalidate" \
+            --recursive \
+            --include "*.css" \
+            --update
+          ossutil set-meta oss://cross-border-nav/ \
+            "Cache-Control:no-cache, no-store, must-revalidate" \
+            --recursive \
+            --include "*.js" \
+            --update
+
+      # 7. 为图片和字体设置长缓存
+      - name: Set Cache-Control for static assets
+        run: |
+          for ext in png jpg jpeg gif webp svg ico woff woff2 ttf eot; do
+            ossutil set-meta oss://cross-border-nav/ \
+              "Cache-Control:public, max-age=2592000" \
+              --recursive \
+              --include "*.${ext}" \
+              --update
+          done
+
+      # 8. 为 JSON 数据文件设置短缓存（数据会更新，不能缓存太久）
+      - name: Set Cache-Control for JSON files
+        run: |
+          ossutil set-meta oss://cross-border-nav/ \
+            "Cache-Control:public, max-age=300" \
+            --recursive \
+            --include "*.json" \
+            --update
+
+      # 9. 部署完成，输出摘要
+      - name: Deployment summary
+        run: |
+          echo "✅ 部署成功！"
+          echo "🪣 Bucket: cross-border-nav"
+          echo "🌐 Endpoint: oss-cn-hangzhou.aliyuncs.com"
+          echo "📦 Commit: ${{ github.sha }}"
+          echo "🕐 Time: $(date '+%Y-%m-%d %H:%M:%S UTC')"
