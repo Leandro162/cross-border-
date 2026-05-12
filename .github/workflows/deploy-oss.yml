@@ -24,13 +24,13 @@ jobs:
           sudo mv ossutil-v1.7.19-linux-amd64/ossutil64 /usr/local/bin/ossutil
           ossutil --version
 
-      # 3. 配置 ossutil 鉴权
+      # 3. 配置 ossutil 鉴权（使用短参数，兼容性更好）
       - name: Configure ossutil
         run: |
           ossutil config \
-            --access-key-id "${{ secrets.ALI_OSS_ACCESS_KEY_ID }}" \
-            --access-key-secret "${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}" \
-            --endpoint "oss-cn-hangzhou.aliyuncs.com"
+            -i "${{ secrets.ALI_OSS_ACCESS_KEY_ID }}" \
+            -k "${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}" \
+            -e "oss-cn-hangzhou.aliyuncs.com"
 
       # 4. 同步静态文件到 OSS（排除无关文件）
       #    --delete 会删除 OSS 上本地不存在的文件，保持完全同步
@@ -38,53 +38,40 @@ jobs:
         run: |
           ossutil sync . oss://cross-border-nav/ \
             --delete \
-            --exclude ".git/*" \
-            --exclude ".github/*" \
+            --exclude "*.git" \
             --exclude "*.md" \
             --exclude "*.sh" \
             --exclude ".gitignore" \
             --exclude ".DS_Store" \
             --jobs 10
 
-      # 5. 为 HTML 文件单独设置短缓存（no-cache，确保用户每次获取最新版本）
-      - name: Set Cache-Control for HTML files
+      # 5. 为 HTML / CSS / JS 文件设置短缓存
+      - name: Set Cache-Control for HTML CSS JS files
         run: |
-          ossutil set-meta oss://cross-border-nav/ \
-            "Cache-Control:no-cache, no-store, must-revalidate" \
-            --recursive \
-            --include "*.html" \
-            --update
-
-      # 6. 为 CSS / JS 文件设置短缓存（文件名固定不变，不能用长缓存）
-      - name: Set Cache-Control for CSS and JS files
-        run: |
-          ossutil set-meta oss://cross-border-nav/ \
-            "Cache-Control:no-cache, no-store, must-revalidate" \
-            --recursive \
-            --include "*.css" \
-            --update
-          ossutil set-meta oss://cross-border-nav/ \
-            "Cache-Control:no-cache, no-store, must-revalidate" \
-            --recursive \
-            --include "*.js" \
-            --update
-
-      # 7. 为图片和字体设置长缓存
-      - name: Set Cache-Control for static assets
-        run: |
-          for ext in png jpg jpeg gif webp svg ico woff woff2 ttf eot; do
+          for ext in html css js; do
             ossutil set-meta oss://cross-border-nav/ \
-              "Cache-Control:public, max-age=2592000" \
+              Cache-Control "no-cache, no-store, must-revalidate" \
               --recursive \
               --include "*.${ext}" \
               --update
           done
 
-      # 8. 为 JSON 数据文件设置短缓存（数据会更新，不能缓存太久）
+      # 6. 为图片和字体设置长缓存
+      - name: Set Cache-Control for static assets
+        run: |
+          for ext in png jpg jpeg gif webp svg ico woff woff2 ttf eot; do
+            ossutil set-meta oss://cross-border-nav/ \
+              Cache-Control "public, max-age=2592000" \
+              --recursive \
+              --include "*.${ext}" \
+              --update
+          done
+
+      # 7. 为 JSON 数据文件设置短缓存
       - name: Set Cache-Control for JSON files
         run: |
           ossutil set-meta oss://cross-border-nav/ \
-            "Cache-Control:public, max-age=300" \
+            Cache-Control "public, max-age=300" \
             --recursive \
             --include "*.json" \
             --update
