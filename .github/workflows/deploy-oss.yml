@@ -21,8 +21,8 @@ jobs:
         run: |
           curl -o ossutil.zip https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil-v1.7.19-linux-amd64.zip
           unzip ossutil.zip
-          sudo mv ossutil-v1.7.19-linux-amd64/ossutil /usr/local/bin/ossutil
-          ossutil version
+          sudo mv ossutil-v1.7.19-linux-amd64/ossutil64 /usr/local/bin/ossutil
+          ossutil --version
 
       # 3. 配置 ossutil 鉴权
       - name: Configure ossutil
