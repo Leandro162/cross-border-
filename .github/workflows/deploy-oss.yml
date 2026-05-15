@@ -36,7 +36,8 @@ jobs:
       #    --delete 会删除 OSS 上本地不存在的文件，保持完全同步
       - name: Sync files to OSS
         run: |
-          ossutil sync . oss://cross-border-nav/ \
+          
+          ossutil sync ./files oss://cross-border-nav/ \
             --delete \
             --exclude "*.git" \
             --exclude "*.md" \
