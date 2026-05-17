@@ -137,18 +137,8 @@ button { cursor: pointer; font-family: inherit; }
   align-items: center;
   gap: 10px;
 }
-.btn-submit {
-  height: 38px;
-  padding: 0 20px;
-  background: var(--clr-primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-btn);
-  font-size: 14px;
-  font-weight: 600;
-  transition: background var(--transition), transform var(--transition);
-}
-.btn-submit:hover { background: var(--clr-primary-dark); transform: translateY(-1px); }
+/* .btn-submit 样式已完全删除 */
+
 .btn-mobile-menu {
   display: none;
   width: 36px;
@@ -490,8 +480,8 @@ button { cursor: pointer; font-family: inherit; }
   .cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 480px) {
+  .hero { padding: 28px 16px; }
+  .section { padding: 18px 16px; }
+  .sort-bar { padding: 10px 16px; }
   .cards-grid { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 22px; }
-  .hero p { font-size: 13px; }
-  .btn-submit { padding: 0 14px; font-size: 13px; }
 }

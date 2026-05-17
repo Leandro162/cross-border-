@@ -115,12 +115,6 @@
     html += `
       <li class="sidebar-divider"></li>
       <li>
-        <button class="nav-item" id="btn-submit-url">
-          <span class="nav-icon">🔗</span>
-          <span>Submit URL</span>
-        </button>
-      </li>
-      <li>
         <button class="nav-item" id="btn-about">
           <span class="nav-icon">ℹ️</span>
           <span>About Us</span>
@@ -222,7 +216,7 @@
         <div class="card-footer">
           <span class="card-tag tag-${escHtml(tagKey)}">${escHtml(tagLabel)}</span>
           <span class="card-views">
-            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3C4.5 3 1.5 5.5 0 8c1.5 2.5 4.5 5 8 5s6.5-2.5 8-5c-1.5-2.5-4.5-5-8-5zm0 8a3 3 0 110-6 3 3 0 010 6z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3C4.5 3 1.5 5.5 0 8c1.5 2.5 4.5 5 8 5s6.5-2.5-8-5zm0 8a3 3 0 110-6 3 3 0 010 6z"/></svg>
             ${views}
           </span>
         </div>
