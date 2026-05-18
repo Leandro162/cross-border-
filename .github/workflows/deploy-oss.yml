@@ -33,16 +33,15 @@ jobs:
             -k "${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}" \
             -e "oss-cn-hangzhou.aliyuncs.com"
 
-      # 4. 同步 files/ 目录到 OSS 根目录
+      # 4. 强制覆盖上传 files/ 到 OSS 根目录，再清理多余文件
       - name: Sync files to OSS
         run: |
+          ossutil cp ./files/ oss://cross-border-nav/ \
+            --recursive \
+            --force \
+            --jobs 10
           ossutil sync ./files oss://cross-border-nav/ \
             --delete \
-            --exclude "*.git" \
-            --exclude "*.md" \
-            --exclude "*.sh" \
-            --exclude ".gitignore" \
-            --exclude ".DS_Store" \
             --jobs 10
 
       # 5. HTML / CSS / JS 设置短缓存
