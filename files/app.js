@@ -51,6 +51,7 @@
     sidebar:      $('sidebar'),
     overlay:      $('sidebar-overlay'),
   };
+  let searchTimer = null;
 
   /* ===== Fetch Data ===== */
   function loadData() {
@@ -152,7 +153,14 @@
     function matchItem(item) {
       if (category !== 'all' && item.category !== category) return false;
       if (q) {
-        const haystack = (item.name + item.description + item.category).toLowerCase();
+        const haystack = [
+          item.name,
+          item.description,
+          item.category,
+          CATEGORY_LABELS[item.category],
+          item.tag,
+          TAG_LABELS[item.tag],
+        ].filter(Boolean).join(' ').toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       return true;
@@ -271,18 +279,17 @@
         const g2 = groups[i + 1];
 
         if (g2) {
-          // Two-column layout using CSS grid
           html += `
-            <div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px;">
-              <div>
+            <div class="section category-pair">
+              <div class="category-column">
                 <h2 class="section-title">${escHtml(g1.label)}</h2>
-                <div class="cards-grid" style="grid-template-columns:repeat(3,1fr);">
+                <div class="cards-grid category-grid">
                   ${g1.items.map(cardHTML).join('')}
                 </div>
               </div>
-              <div>
+              <div class="category-column">
                 <h2 class="section-title">${escHtml(g2.label)}</h2>
-                <div class="cards-grid" style="grid-template-columns:repeat(3,1fr);">
+                <div class="cards-grid category-grid">
                   ${g2.items.map(cardHTML).join('')}
                 </div>
               </div>
@@ -314,20 +321,6 @@
       });
     });
 
-    // Respond to two-column sections on mobile
-    applyResponsiveTwoCol();
-  }
-
-  /* On narrow screens, stack the two-column sections */
-  function applyResponsiveTwoCol() {
-    if (window.innerWidth < 768) {
-      els.contentArea.querySelectorAll('.section[style*="grid-template-columns:1fr 1fr"]').forEach(el => {
-        el.style.gridTemplateColumns = '1fr';
-      });
-      els.contentArea.querySelectorAll('.cards-grid[style*="grid-template-columns:repeat(3,1fr)"]').forEach(el => {
-        el.style.gridTemplateColumns = '';
-      });
-    }
   }
 
   /* ===== Mobile Sidebar ===== */
@@ -346,8 +339,11 @@
   function bindEvents() {
     // Search
     els.searchInput.addEventListener('input', () => {
-      state.query = els.searchInput.value;
-      render();
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        state.query = els.searchInput.value;
+        render();
+      }, 180);
     });
 
     // Sort
@@ -363,7 +359,6 @@
     // Resize
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 768) closeMobileSidebar();
-      applyResponsiveTwoCol();
     });
   }
 
