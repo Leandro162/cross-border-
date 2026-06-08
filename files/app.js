@@ -2,342 +2,276 @@
 (function () {
   'use strict';
 
-  /* ===== State ===== */
   const state = {
-    data: null,           // raw JSON
-    category: 'all',     // current sidebar filter
-    query: '',            // search query
-    sort: 'default',      // default | views
+    data: null,
+    category: 'all',
+    query: '',
+    sort: 'default',
   };
 
-  /* ===== Category map ===== */
   const CATEGORIES = [
-    { key: 'all',       label: '全部资源', icon: '🏠' },
-    { key: 'blogger',   label: '博主自用', icon: '⭐' },
-    { key: 'website',   label: '建站工具', icon: '🖥️' },
-    { key: 'payment',   label: '支付收款', icon: '💳' },
-    { key: 'adnetwork', label: '广告联盟', icon: '📣' },
-    { key: 'analytics', label: '数据分析', icon: '📊' },
-    { key: 'ai',        label: 'AI 工具',  icon: '🤖' },
+    { key: 'all', label: '全部资源', icon: 'grid' },
+    { key: 'blogger', label: '内容创作', icon: 'edit' },
+    { key: 'website', label: '建站工具', icon: 'browser' },
+    { key: 'payment', label: '支付收款', icon: 'card' },
+    { key: 'adnetwork', label: '广告联盟', icon: 'megaphone' },
+    { key: 'analytics', label: '数据分析', icon: 'chart' },
+    { key: 'ai', label: 'AI 工具', icon: 'spark' },
   ];
 
-  const CATEGORY_LABELS = {
-    blogger:    '博主自用',
-    website:    '建站工具',
-    payment:    '支付收款',
-    adnetwork:  '广告联盟',
-    analytics:  '数据分析',
-    ai:         'AI 工具',
-  };
+  const CATEGORY_LABELS = Object.fromEntries(
+    CATEGORIES.filter(category => category.key !== 'all').map(category => [category.key, category.label]),
+  );
 
   const TAG_LABELS = {
-    featured:   '精选',
-    popular:    '热门',
-    hot:        '爆款',
-    new:        '新上线',
+    featured: '编辑精选',
+    popular: '广受欢迎',
+    hot: '高热度',
+    new: '新上线',
     enterprise: '企业级',
-    free:       '免费',
+    free: '免费使用',
   };
 
-  /* ===== DOM refs ===== */
+  const ICON_PATHS = {
+    grid: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+    edit: '<path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
+    browser: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>',
+    card: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/>',
+    megaphone: '<path d="m4 13 13-6v10L4 13Zm0 0v5h4v-3M17 10.5c2 .5 3 1.7 3 3.5s-1 3-3 3.5"/>',
+    chart: '<path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/>',
+    spark: '<path d="m12 3 1.3 4.2L17.5 9l-4.2 1.8L12 15l-1.3-4.2L6.5 9l4.2-1.8L12 3Zm6 11 .7 2.3L21 17l-2.3.7L18 20l-.7-2.3L15 17l2.3-.7L18 14ZM5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14Z"/>',
+  };
+
   const $ = id => document.getElementById(id);
   const els = {
-    sidebarNav:   $('sidebar-nav'),
-    searchInput:  $('search-input'),
-    sortSelect:   $('sort-select'),
-    resultCount:  $('result-count'),
-    contentArea:  $('content-area'),
-    btnMenu:      $('btn-mobile-menu'),
-    sidebar:      $('sidebar'),
-    overlay:      $('sidebar-overlay'),
+    categoryNav: $('category-nav'),
+    searchInput: $('search-input'),
+    sortSelect: $('sort-select'),
+    resultCount: $('result-count'),
+    contentArea: $('content-area'),
+    statResources: $('stat-resources'),
+    statCategories: $('stat-categories'),
   };
   let searchTimer = null;
 
-  /* ===== Fetch Data ===== */
+  function iconSvg(name) {
+    return `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[name] || ICON_PATHS.grid}</svg>`;
+  }
+
   function loadData() {
     renderSkeletons();
-    fetch('data/deals.json')
-      .then(r => {
-        if (!r.ok) throw new Error('Network response was not ok');
-        return r.json();
+    fetch('deals.json')
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
       })
-      .then(json => {
-        state.data = json;
+      .then(data => {
+        state.data = data;
+        const total = (data.featured || []).length + (data.items || []).length;
+        els.statResources.textContent = total;
+        els.statCategories.textContent = CATEGORIES.length - 1;
         render();
       })
-      .catch(err => {
-        console.error('Failed to load data:', err);
+      .catch(error => {
+        console.error('Failed to load data:', error);
+        els.resultCount.textContent = '资源加载失败';
         els.contentArea.innerHTML = `
-          <div class="section">
-            <div class="empty-state">
-              <div class="empty-icon">⚠️</div>
-              <p>数据加载失败，请刷新页面重试。</p>
-            </div>
+          <div class="empty-state">
+            <span class="empty-symbol">!</span>
+            <h2>暂时无法加载资源</h2>
+            <p>请刷新页面重试，或稍后再来看看。</p>
           </div>`;
       });
   }
 
-  /* ===== Skeleton ===== */
-  function renderSkeletons() {
-    let html = '<div class="section"><div class="cards-grid">';
-    for (let i = 0; i < 8; i++) {
-      html += `
-        <div class="skeleton-card">
-          <div style="display:flex;gap:10px;align-items:flex-start;">
-            <div class="skeleton sk-logo"></div>
-            <div style="flex:1;display:flex;flex-direction:column;gap:8px;margin-top:4px;">
-              <div class="skeleton sk-title"></div>
-              <div class="skeleton sk-desc"></div>
-            </div>
-          </div>
-          <div class="skeleton sk-desc2"></div>
-          <div class="skeleton sk-btn"></div>
-        </div>`;
-    }
-    html += '</div></div>';
-    els.contentArea.innerHTML = html;
-  }
+  function buildCategoryNav() {
+    els.categoryNav.innerHTML = CATEGORIES.map(category => `
+      <button class="category-chip${state.category === category.key ? ' active' : ''}" data-category="${category.key}" type="button">
+        ${iconSvg(category.icon)}
+        <span>${category.label}</span>
+      </button>
+    `).join('');
 
-  /* ===== Sidebar ===== */
-  function buildSidebar() {
-    let html = '';
-    CATEGORIES.forEach((c, i) => {
-      if (i === CATEGORIES.length - 3 && i > 0) {
-        html += '<li class="sidebar-divider"></li>';
-      }
-      html += `
-        <li>
-          <button class="nav-item${state.category === c.key ? ' active' : ''}" data-cat="${c.key}">
-            <span class="nav-icon">${c.icon}</span>
-            <span>${c.label}</span>
-          </button>
-        </li>`;
-    });
-    html += `
-      <li class="sidebar-divider"></li>
-      <li>
-        <button class="nav-item" id="btn-about">
-          <span class="nav-icon">ℹ️</span>
-          <span>About Us</span>
-        </button>
-      </li>`;
-    els.sidebarNav.innerHTML = html;
-
-    els.sidebarNav.querySelectorAll('.nav-item[data-cat]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.category = btn.dataset.cat;
-        updateActiveNav();
-        render();
-        closeMobileSidebar();
-      });
+    els.categoryNav.addEventListener('click', event => {
+      const button = event.target.closest('[data-category]');
+      if (!button) return;
+      state.category = button.dataset.category;
+      updateActiveCategory();
+      render();
+      document.querySelector('.content-toolbar').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
-  function updateActiveNav() {
-    els.sidebarNav.querySelectorAll('.nav-item[data-cat]').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.cat === state.category);
+  function updateActiveCategory() {
+    els.categoryNav.querySelectorAll('[data-category]').forEach(button => {
+      button.classList.toggle('active', button.dataset.category === state.category);
     });
   }
 
-  /* ===== Filter & Sort ===== */
   function getFilteredItems() {
-    const { data, category, query, sort } = state;
-    if (!data) return { featured: [], groups: [] };
+    if (!state.data) return { featured: [], groups: [] };
+    const featured = state.data.featured || [];
+    const items = state.data.items || [];
+    const query = state.query.trim().toLowerCase();
 
-    const q = query.trim().toLowerCase();
+    function matches(item) {
+      if (state.category !== 'all' && item.category !== state.category) return false;
+      if (!query) return true;
+      const searchText = [
+        item.name,
+        item.description,
+        item.category,
+        CATEGORY_LABELS[item.category],
+        item.tag,
+        TAG_LABELS[item.tag],
+      ].filter(Boolean).join(' ').toLowerCase();
+      return searchText.includes(query);
+    }
 
-    // merge all items for search/filter
-    const allFeatured = data.featured || [];
-    const allItems = data.items || [];
+    function sortItems(list) {
+      return state.sort === 'views'
+        ? [...list].sort((a, b) => b.views - a.views)
+        : list;
+    }
 
-    function matchItem(item) {
-      if (category !== 'all' && item.category !== category) return false;
-      if (q) {
-        const haystack = [
-          item.name,
-          item.description,
-          item.category,
-          CATEGORY_LABELS[item.category],
-          item.tag,
-          TAG_LABELS[item.tag],
-        ].filter(Boolean).join(' ').toLowerCase();
-        if (!haystack.includes(q)) return false;
+    if (state.category !== 'all' || query) {
+      return {
+        featured: [],
+        groups: [{
+          key: state.category,
+          label: state.category === 'all' ? '搜索结果' : CATEGORY_LABELS[state.category],
+          items: sortItems([...featured, ...items].filter(matches)),
+        }],
+      };
+    }
+
+    const groupMap = new Map();
+    sortItems(items.filter(matches)).forEach(item => {
+      if (!groupMap.has(item.category)) {
+        groupMap.set(item.category, {
+          key: item.category,
+          label: CATEGORY_LABELS[item.category] || item.category,
+          items: [],
+        });
       }
-      return true;
-    }
-
-    function sortItems(arr) {
-      if (sort === 'views') return [...arr].sort((a, b) => b.views - a.views);
-      return arr;
-    }
-
-    // If searching or filtering by category, flatten everything
-    const isFiltered = category !== 'all' || q !== '';
-
-    if (isFiltered) {
-      const filtered = sortItems([...allFeatured, ...allItems].filter(matchItem));
-      return { featured: [], groups: [{ label: '搜索结果', items: filtered }] };
-    }
-
-    // Default: featured section + grouped sections
-    const filteredFeatured = sortItems(allFeatured.filter(matchItem));
-
-    // Group items by category
-    const groupMap = {};
-    sortItems(allItems.filter(matchItem)).forEach(item => {
-      const label = CATEGORY_LABELS[item.category] || item.category;
-      if (!groupMap[item.category]) groupMap[item.category] = { label, items: [] };
-      groupMap[item.category].items.push(item);
+      groupMap.get(item.category).items.push(item);
     });
 
-    // Pair categories in two columns
-    const groups = Object.values(groupMap);
-
-    return { featured: filteredFeatured, groups };
+    return { featured: sortItems(featured.filter(matches)), groups: [...groupMap.values()] };
   }
 
-  /* ===== Card HTML ===== */
-  function cardHTML(item) {
-    const tagKey = item.tag || 'popular';
-    const tagLabel = TAG_LABELS[tagKey] || tagKey;
-    const views = item.views >= 1000
-      ? (item.views / 1000).toFixed(1) + 'k'
-      : item.views;
-
-    const logoSrc = item.logo || '';
-    const fallbackChar = item.name.charAt(0).toUpperCase();
-
+  function logoHtml(item, className) {
+    const fallback = escHtml(item.name.charAt(0).toUpperCase());
     return `
-      <div class="card" role="article">
-        <div class="card-header">
-          <img
-            class="card-logo"
-            src="${escHtml(logoSrc)}"
-            alt="${escHtml(item.name)} logo"
-            loading="lazy"
-            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-          />
-          <div class="card-logo-fallback" style="display:none;">${escHtml(fallbackChar)}</div>
-          <div class="card-name">${escHtml(item.name)}</div>
+      <span class="${className}">
+        <img src="${escHtml(item.logo || '')}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+        <span class="logo-fallback" hidden>${fallback}</span>
+      </span>`;
+  }
+
+  function featuredCard(item) {
+    const tag = TAG_LABELS[item.tag] || TAG_LABELS.featured;
+    return `
+      <a class="featured-card" href="${escHtml(item.url)}" target="_blank" rel="noopener noreferrer">
+        <div class="featured-card-top">
+          ${logoHtml(item, 'featured-logo')}
+          <span class="card-arrow" aria-hidden="true">↗</span>
         </div>
-        <p class="card-desc">${escHtml(item.description)}</p>
-        <div class="card-footer">
-          <span class="card-tag tag-${escHtml(tagKey)}">${escHtml(tagLabel)}</span>
-          <span class="card-views">
-            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3C4.5 3 1.5 5.5 0 8c1.5 2.5 4.5 5 8 5s6.5-2.5-8-5zm0 8a3 3 0 110-6 3 3 0 010 6z"/></svg>
-            ${views}
+        <div class="card-eyebrow">${escHtml(CATEGORY_LABELS[item.category] || item.category)}</div>
+        <h3>${escHtml(item.name)}</h3>
+        <p>${escHtml(item.description)}</p>
+        <div class="card-bottom">
+          <span class="tag tag-${escHtml(item.tag || 'featured')}">${escHtml(tag)}</span>
+          <span>访问官网</span>
+        </div>
+      </a>`;
+  }
+
+  function resourceCard(item) {
+    const category = CATEGORY_LABELS[item.category] || item.category;
+    const tag = TAG_LABELS[item.tag] || item.tag;
+    return `
+      <a class="resource-card" href="${escHtml(item.url)}" target="_blank" rel="noopener noreferrer">
+        ${logoHtml(item, 'resource-logo')}
+        <span class="resource-card-copy">
+          <span class="resource-card-heading">
+            <strong>${escHtml(item.name)}</strong>
+            <span class="card-arrow" aria-hidden="true">↗</span>
           </span>
+          <span class="resource-card-meta">${escHtml(category)} · ${escHtml(tag)}</span>
+          <span class="resource-card-desc">${escHtml(item.description)}</span>
+        </span>
+      </a>`;
+  }
+
+  function renderSkeletons() {
+    els.contentArea.innerHTML = `
+      <section class="content-section">
+        <div class="section-heading skeleton-heading"></div>
+        <div class="featured-grid">
+          ${Array.from({ length: 3 }, () => '<div class="skeleton-card skeleton"></div>').join('')}
         </div>
-        <a href="${escHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="card-link-btn">访问官网</a>
-      </div>`;
+      </section>`;
   }
 
-  function escHtml(str) {
-    return String(str)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
-  }
-
-  /* ===== Main Render ===== */
   function render() {
     if (!state.data) return;
     const { featured, groups } = getFilteredItems();
+    const total = featured.length + groups.reduce((sum, group) => sum + group.items.length, 0);
+    els.resultCount.textContent = `找到 ${total} 个资源`;
 
-    let totalCount = featured.length + groups.reduce((sum, g) => sum + g.items.length, 0);
-    els.resultCount.textContent = `共 ${totalCount} 个资源`;
+    if (total === 0) {
+      els.contentArea.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-symbol">?</span>
+          <h2>没有找到匹配的资源</h2>
+          <p>换一个关键词，或选择“全部资源”再试试。</p>
+        </div>`;
+      return;
+    }
 
     let html = '';
-
-    // Featured section
-    if (featured.length > 0) {
+    if (featured.length) {
       html += `
-        <div class="section">
-          <h2 class="section-title">⭐ Featured</h2>
-          <div class="cards-grid">
-            ${featured.map(cardHTML).join('')}
+        <section class="content-section featured-section" id="featured">
+          <div class="section-heading">
+            <div><span class="section-kicker">EDITOR'S PICKS</span><h2>本周精选</h2></div>
+            <p>经过筛选、值得优先了解的跨境工具</p>
           </div>
-        </div>`;
+          <div class="featured-grid">${featured.map(featuredCard).join('')}</div>
+        </section>`;
     }
 
-    // Groups
-    if (groups.length === 0 && featured.length === 0) {
+    html += `<div id="resources">`;
+    groups.forEach((group, index) => {
+      if (!group.items.length) return;
+      const category = CATEGORIES.find(item => item.key === group.key);
       html += `
-        <div class="section">
-          <div class="cards-grid">
-            <div class="empty-state">
-              <div class="empty-icon">🔍</div>
-              <p>没有找到相关资源，请尝试其他关键词。</p>
+        <section class="resource-section">
+          <div class="section-heading compact">
+            <div class="section-title-with-icon">
+              <span class="section-icon">${iconSvg(category?.icon || 'grid')}</span>
+              <div><span class="section-kicker">CATEGORY ${String(index + 1).padStart(2, '0')}</span><h2>${escHtml(group.label)}</h2></div>
             </div>
+            <span class="section-count">${group.items.length} 个资源</span>
           </div>
-        </div>`;
-    } else {
-      // Pair groups side by side in two columns (like screenshot)
-      for (let i = 0; i < groups.length; i += 2) {
-        const g1 = groups[i];
-        const g2 = groups[i + 1];
-
-        if (g2) {
-          html += `
-            <div class="section category-pair">
-              <div class="category-column">
-                <h2 class="section-title">${escHtml(g1.label)}</h2>
-                <div class="cards-grid category-grid">
-                  ${g1.items.map(cardHTML).join('')}
-                </div>
-              </div>
-              <div class="category-column">
-                <h2 class="section-title">${escHtml(g2.label)}</h2>
-                <div class="cards-grid category-grid">
-                  ${g2.items.map(cardHTML).join('')}
-                </div>
-              </div>
-            </div>`;
-        } else {
-          html += `
-            <div class="section">
-              <h2 class="section-title">${escHtml(g1.label)}</h2>
-              <div class="cards-grid">
-                ${g1.items.map(cardHTML).join('')}
-              </div>
-            </div>`;
-        }
-      }
-    }
-
-    els.contentArea.innerHTML = html;
-
-    // Staggered fade-in for cards
-    requestAnimationFrame(() => {
-      els.contentArea.querySelectorAll('.card').forEach((el, i) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(12px)';
-        el.style.transition = 'opacity 0.3s ease, transform 0.3s ease, box-shadow 0.18s ease, border-color 0.18s ease';
-        setTimeout(() => {
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-        }, i * 30);
-      });
+          <div class="resource-grid">${group.items.map(resourceCard).join('')}</div>
+        </section>`;
     });
-
+    html += '</div>';
+    els.contentArea.innerHTML = html;
   }
 
-  /* ===== Mobile Sidebar ===== */
-  function openMobileSidebar() {
-    els.sidebar.classList.add('open');
-    els.overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMobileSidebar() {
-    els.sidebar.classList.remove('open');
-    els.overlay.classList.remove('active');
-    document.body.style.overflow = '';
+  function escHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
-  /* ===== Events ===== */
   function bindEvents() {
-    // Search
     els.searchInput.addEventListener('input', () => {
       clearTimeout(searchTimer);
       searchTimer = setTimeout(() => {
@@ -346,25 +280,21 @@
       }, 180);
     });
 
-    // Sort
     els.sortSelect.addEventListener('change', () => {
       state.sort = els.sortSelect.value;
       render();
     });
 
-    // Mobile menu
-    els.btnMenu.addEventListener('click', openMobileSidebar);
-    els.overlay.addEventListener('click', closeMobileSidebar);
-
-    // Resize
-    window.addEventListener('resize', () => {
-      if (window.innerWidth >= 768) closeMobileSidebar();
+    document.addEventListener('keydown', event => {
+      if (event.key === '/' && document.activeElement !== els.searchInput) {
+        event.preventDefault();
+        els.searchInput.focus();
+      }
     });
   }
 
-  /* ===== Init ===== */
   function init() {
-    buildSidebar();
+    buildCategoryNav();
     bindEvents();
     loadData();
   }

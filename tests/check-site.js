@@ -10,17 +10,26 @@ const css = read('files/style.css');
 const index = read('files/index.html');
 const readme = read('README.md');
 
-assert.match(app, /class="section category-pair"/);
-assert.match(app, /class="category-column"/);
-assert.match(app, /class="cards-grid category-grid"/);
-assert.doesNotMatch(app, /style="display:grid;grid-template-columns:1fr 1fr/);
-assert.doesNotMatch(app, /applyResponsiveTwoCol/);
-assert.match(css, /\.category-pair\s*\{/);
-assert.match(css, /@media \(max-width: 768px\)[\s\S]*\.category-pair\s*\{/);
+assert.ok(app.includes("fetch('deals.json')"));
+assert.ok(!app.includes('data/deals.json'));
+assert.match(index, /id="category-nav"/);
+assert.match(index, /class="hero-search"/);
+assert.match(index, /id="stat-resources"/);
+assert.match(app, /class="featured-card"/);
+assert.match(app, /class="resource-section"/);
+assert.match(app, /class="resource-card"/);
+assert.doesNotMatch(app, /category-pair/);
+assert.doesNotMatch(index, /class="sidebar"/);
+assert.match(css, /\.category-nav\s*\{/);
+assert.match(css, /\.featured-grid\s*\{/);
+assert.match(css, /\.resource-grid\s*\{/);
+assert.match(css, /@media \(max-width: 720px\)/);
 
 assert.match(app, /TAG_LABELS\[item\.tag\]/);
 assert.match(app, /setTimeout\([\s\S]*render\(\)/);
 assert.match(app, /clearTimeout/);
+assert.match(app, /&amp;/);
+assert.match(app, /&lt;/);
 
 assert.match(index, /href="privacy\.html"/);
 assert.match(index, /href="terms\.html"/);
