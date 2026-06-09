@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "WordPress",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/9/98/WordPress_blue_logo.svg",
+      "logo": "icons/1.png",
       "category": "website",
       "tag": "featured",
       "description": "全球最流行的建站系统，插件生态丰富，适合博客和独立站。",
@@ -13,7 +13,7 @@
     {
       "id": 2,
       "name": "Notion",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png",
+      "logo": "icons/2.png",
       "category": "blogger",
       "tag": "featured",
       "description": "博主必备的笔记与内容管理工具，支持多人协作与公开发布。",
@@ -23,7 +23,7 @@
     {
       "id": 3,
       "name": "Stripe",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg",
+      "logo": "icons/3.png",
       "category": "payment",
       "tag": "featured",
       "description": "开发者友好的全球支付基础设施，支持135种以上货币收款。",
@@ -33,7 +33,7 @@
     {
       "id": 4,
       "name": "Google AdSense",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/4/4e/AdSense_svglogo.svg",
+      "logo": "icons/4.png",
       "category": "adnetwork",
       "tag": "featured",
       "description": "全球最大的广告联盟平台，博主挂广告变现的首选方案。",
@@ -43,7 +43,7 @@
     {
       "id": 5,
       "name": "ChatGPT",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
+      "logo": "icons/5.png",
       "category": "ai",
       "tag": "featured",
       "description": "OpenAI 出品的 AI 对话工具，写作、选题、翻译样样精通。",
@@ -53,7 +53,7 @@
     {
       "id": 6,
       "name": "Google Analytics",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/8/89/Google-Analytics-logo.png",
+      "logo": "icons/6.svg",
       "category": "analytics",
       "tag": "featured",
       "description": "免费的网站流量分析工具，实时掌握访客来源与行为数据。",
@@ -65,7 +65,7 @@
     {
       "id": 101,
       "name": "Typecho",
-      "logo": "https://typecho.org/favicon.ico",
+      "logo": "icons/101.png",
       "category": "website",
       "tag": "free",
       "description": "轻量级开源博客系统，PHP 驱动，适合自建博客和个人站。",
@@ -75,7 +75,7 @@
     {
       "id": 102,
       "name": "Hexo",
-      "logo": "https://hexo.io/favicon.ico",
+      "logo": "icons/102.png",
       "category": "website",
       "tag": "free",
       "description": "基于 Node.js 的静态博客框架，一键部署到 GitHub Pages。",
@@ -85,7 +85,7 @@
     {
       "id": 103,
       "name": "Webflow",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/9/92/Webflow_logo.svg",
+      "logo": "icons/103.png",
       "category": "website",
       "tag": "popular",
       "description": "可视化无代码建站工具，设计师首选，支持响应式布局。",
@@ -95,7 +95,7 @@
     {
       "id": 104,
       "name": "Ghost",
-      "logo": "https://ghost.org/favicon.ico",
+      "logo": "icons/104.png",
       "category": "website",
       "tag": "popular",
       "description": "专为博主和内容创作者打造的现代化发布平台。",
@@ -105,7 +105,7 @@
     {
       "id": 201,
       "name": "Obsidian",
-      "logo": "https://obsidian.md/favicon.ico",
+      "logo": "icons/201.jpg",
       "category": "blogger",
       "tag": "popular",
       "description": "本地化知识库与笔记工具，双向链接构建个人知识图谱。",
@@ -115,7 +115,7 @@
     {
       "id": 202,
       "name": "Canva",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Canva_Logo.svg",
+      "logo": "icons/202.jpg",
       "category": "blogger",
       "tag": "popular",
       "description": "在线设计工具，快速制作封面图、海报、社交媒体素材。",
@@ -125,7 +125,7 @@
     {
       "id": 203,
       "name": "Typora",
-      "logo": "https://typora.io/favicon.ico",
+      "logo": "icons/203.png",
       "category": "blogger",
       "tag": "popular",
       "description": "所见即所得的 Markdown 编辑器，写作体验极度顺滑。",
@@ -135,7 +135,7 @@
     {
       "id": 301,
       "name": "PayPal",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg",
+      "logo": "icons/301.png",
       "category": "payment",
       "tag": "popular",
       "description": "全球通用的在线收付款平台，支持跨境打赏与商业收款。",
@@ -145,7 +145,7 @@
     {
       "id": 302,
       "name": "Wise",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/9/97/Wise_logo_2021.svg",
+      "logo": "icons/302.png",
       "category": "payment",
       "tag": "new",
       "description": "低手续费国际汇款工具，支持多币种账户，适合境外收款。",
@@ -155,7 +155,7 @@
     {
       "id": 303,
       "name": "LemonSqueezy",
-      "logo": "https://www.lemonsqueezy.com/favicon.ico",
+      "logo": "icons/303.png",
       "category": "payment",
       "tag": "hot",
       "description": "专为创作者设计的数字产品销售与订阅收款平台。",
@@ -165,7 +165,7 @@
     {
       "id": 401,
       "name": "Media.net",
-      "logo": "https://www.media.net/favicon.ico",
+      "logo": "icons/401.png",
       "category": "adnetwork",
       "tag": "popular",
       "description": "雅虎和必应联合广告网络，英文站变现效果出众。",
@@ -175,7 +175,7 @@
     {
       "id": 402,
       "name": "Amazon Associates",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+      "logo": "icons/402.png",
       "category": "adnetwork",
       "tag": "popular",
       "description": "亚马逊联盟计划，推广商品按销售额获取佣金收入。",
@@ -185,7 +185,7 @@
     {
       "id": 403,
       "name": "ShareASale",
-      "logo": "https://www.shareasale.com/favicon.ico",
+      "logo": "icons/403.png",
       "category": "adnetwork",
       "tag": "popular",
       "description": "老牌联盟营销平台，汇聚数千个品牌合作项目。",
@@ -195,7 +195,7 @@
     {
       "id": 501,
       "name": "Similarweb",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/7/79/SimilarWeb_Logo.png",
+      "logo": "icons/501.png",
       "category": "analytics",
       "tag": "popular",
       "description": "竞品流量分析与市场洞察工具，了解任意网站的访客数据。",
@@ -205,7 +205,7 @@
     {
       "id": 502,
       "name": "Hotjar",
-      "logo": "https://www.hotjar.com/favicon.ico",
+      "logo": "icons/502.png",
       "category": "analytics",
       "tag": "popular",
       "description": "用户行为录屏与热力图分析工具，优化页面转化率。",
@@ -215,7 +215,7 @@
     {
       "id": 503,
       "name": "Ahrefs",
-      "logo": "https://ahrefs.com/favicon.ico",
+      "logo": "icons/503.png",
       "category": "analytics",
       "tag": "enterprise",
       "description": "专业 SEO 数据分析平台，关键词研究与外链分析必备工具。",
@@ -225,7 +225,7 @@
     {
       "id": 601,
       "name": "Claude",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Anthropic_logo.svg",
+      "logo": "icons/601.png",
       "category": "ai",
       "tag": "hot",
       "description": "Anthropic 出品的 AI 助手，长文写作和代码能力尤为突出。",
@@ -235,7 +235,7 @@
     {
       "id": 602,
       "name": "Midjourney",
-      "logo": "https://www.midjourney.com/favicon.ico",
+      "logo": "icons/602.png",
       "category": "ai",
       "tag": "hot",
       "description": "顶级 AI 图像生成工具，博主配图和封面设计的利器。",
@@ -245,7 +245,7 @@
     {
       "id": 603,
       "name": "Perplexity AI",
-      "logo": "https://www.perplexity.ai/favicon.ico",
+      "logo": "icons/603.png",
       "category": "ai",
       "tag": "new",
       "description": "AI 驱动的搜索引擎，实时联网检索并给出带引用的答案。",
@@ -255,7 +255,7 @@
     {
       "id": 604,
       "name": "ElevenLabs",
-      "logo": "https://elevenlabs.io/favicon.ico",
+      "logo": "icons/604.png",
       "category": "ai",
       "tag": "new",
       "description": "AI 语音合成平台，一键将文字转为自然流畅的多语种音频。",
@@ -265,7 +265,7 @@
     {
       "id": 105,
       "name": "AdsPower 指纹浏览器",
-      "logo": "https://www.adspower.com/favicon.ico",
+      "logo": "icons/105.png",
       "category": "website",
       "tag": "popular",
       "description": "专为多账号运营打造的防关联指纹浏览器，有效隔离账号环境，降低封号风险。",

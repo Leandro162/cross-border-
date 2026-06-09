@@ -160,45 +160,31 @@
     return { featured: sortItems(featured.filter(matches)), groups: [...groupMap.values()] };
   }
 
-  function logoHtml(item, className) {
-    const fallback = escHtml(item.name.charAt(0).toUpperCase());
+  function logoHtml(item) {
     return `
-      <span class="${className}">
+      <span class="site-logo">
         <img src="${escHtml(item.logo || '')}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
-        <span class="logo-fallback" hidden>${fallback}</span>
+        <span class="site-icon-placeholder" hidden aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.5 3.6 5.5 3.6 9s-1.2 6.5-3.6 9c-2.4-2.5-3.6-5.5-3.6-9S9.6 5.5 12 3Z"/></svg>
+        </span>
       </span>`;
   }
 
-  function featuredCard(item) {
-    const tag = TAG_LABELS[item.tag] || TAG_LABELS.featured;
-    return `
-      <a class="featured-card" href="${escHtml(item.url)}" target="_blank" rel="noopener noreferrer">
-        <div class="featured-card-top">
-          ${logoHtml(item, 'featured-logo')}
-          <span class="card-arrow" aria-hidden="true">↗</span>
-        </div>
-        <div class="card-eyebrow">${escHtml(CATEGORY_LABELS[item.category] || item.category)}</div>
-        <h3>${escHtml(item.name)}</h3>
-        <p>${escHtml(item.description)}</p>
-        <div class="card-bottom">
-          <span class="tag tag-${escHtml(item.tag || 'featured')}">${escHtml(tag)}</span>
-          <span>访问官网</span>
-        </div>
-      </a>`;
-  }
-
-  function resourceCard(item) {
+  function resourceCard(item, isFeatured = false) {
     const category = CATEGORY_LABELS[item.category] || item.category;
     const tag = TAG_LABELS[item.tag] || item.tag;
     return `
-      <a class="resource-card" href="${escHtml(item.url)}" target="_blank" rel="noopener noreferrer">
-        ${logoHtml(item, 'resource-logo')}
+      <a class="resource-card${isFeatured ? ' is-featured' : ''}" href="${escHtml(item.url)}" target="_blank" rel="noopener noreferrer">
+        ${logoHtml(item)}
         <span class="resource-card-copy">
           <span class="resource-card-heading">
             <strong>${escHtml(item.name)}</strong>
             <span class="card-arrow" aria-hidden="true">↗</span>
           </span>
-          <span class="resource-card-meta">${escHtml(category)} · ${escHtml(tag)}</span>
+          <span class="resource-card-meta">
+            ${isFeatured ? '<span class="featured-badge">精选</span>' : ''}
+            <span>${escHtml(category)} · ${escHtml(tag)}</span>
+          </span>
           <span class="resource-card-desc">${escHtml(item.description)}</span>
         </span>
       </a>`;
@@ -238,7 +224,7 @@
             <div><span class="section-kicker">EDITOR'S PICKS</span><h2>本周精选</h2></div>
             <p>经过筛选、值得优先了解的跨境工具</p>
           </div>
-          <div class="featured-grid">${featured.map(featuredCard).join('')}</div>
+          <div class="featured-grid">${featured.map(item => resourceCard(item, true)).join('')}</div>
         </section>`;
     }
 
