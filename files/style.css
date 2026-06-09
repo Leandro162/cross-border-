@@ -231,10 +231,13 @@ img { display: block; max-width: 100%; }
   flex: 0 0 auto;
   width: 48px;
   height: 48px;
+  overflow: hidden;
+  border-radius: 12px;
 }
 .site-logo img {
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
+  border-radius: inherit;
   object-fit: contain;
 }
 .site-icon-placeholder[hidden],

@@ -29,7 +29,8 @@ assert.match(css, /\.featured-grid,/);
 assert.match(css, /\.resource-grid\s*\{/);
 assert.doesNotMatch(css, /\.featured-logo/);
 assert.doesNotMatch(css, /\.logo-fallback/);
-assert.match(css, /\.site-logo\s*\{/);
+assert.match(css, /\.site-logo\s*\{[\s\S]*border-radius:\s*12px;[\s\S]*overflow:\s*hidden;/);
+assert.match(css, /\.site-logo img\s*\{[\s\S]*border-radius:\s*inherit;/);
 assert.match(css, /@media \(max-width: 720px\)/);
 
 assert.match(app, /TAG_LABELS\[item\.tag\]/);
