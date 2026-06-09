@@ -17,6 +17,7 @@
     { key: 'adnetwork', label: '广告联盟', icon: 'megaphone' },
     { key: 'analytics', label: '数据分析', icon: 'chart' },
     { key: 'ai', label: 'AI 工具', icon: 'spark' },
+    { key: 'relay', label: '中转站', icon: 'route' },
   ];
 
   const CATEGORY_LABELS = Object.fromEntries(
@@ -40,6 +41,7 @@
     megaphone: '<path d="m4 13 13-6v10L4 13Zm0 0v5h4v-3M17 10.5c2 .5 3 1.7 3 3.5s-1 3-3 3.5"/>',
     chart: '<path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/>',
     spark: '<path d="m12 3 1.3 4.2L17.5 9l-4.2 1.8L12 15l-1.3-4.2L6.5 9l4.2-1.8L12 3Zm6 11 .7 2.3L21 17l-2.3.7L18 20l-.7-2.3L15 17l2.3-.7L18 14ZM5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14Z"/>',
+    route: '<circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h3a3 3 0 0 1 3 3v6a3 3 0 0 0 3 3h-1M6 8v8"/>',
   };
 
   const $ = id => document.getElementById(id);

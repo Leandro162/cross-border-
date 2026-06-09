@@ -11,7 +11,7 @@
 
 ## Tags
 
-`cross-border-ecommerce` `navigation` `static-site` `aliyun-oss` `javascript`
+`cross-border-ecommerce` `navigation` `api-relay` `static-site` `aliyun-oss` `javascript`
 
 ## Project Metadata
 

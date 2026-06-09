@@ -1,6 +1,6 @@
 # Cross-border Navigation Station
 
-Cross-border Navigation Station is a static directory for cross-border ecommerce resources, covering website building, payments, advertising networks, analytics, and AI tools.
+Cross-border Navigation Station is a static directory for cross-border ecommerce resources, covering website building, payments, advertising networks, analytics, AI tools, and API relay services.
 
 ## Project Structure
 

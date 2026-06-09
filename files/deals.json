@@ -271,6 +271,46 @@
       "description": "专为多账号运营打造的防关联指纹浏览器，有效隔离账号环境，降低封号风险。",
       "url": "https://www.adspower.net/share/slpWvsJcQBItDru",
       "views": 56000
+    },
+    {
+      "id": 304,
+      "name": "Link",
+      "category": "payment",
+      "tag": "new",
+      "description": "快捷支付与账户管理入口，方便用户完成在线付款与支付信息管理。",
+      "url": "https://app.onelink.com/home",
+      "views": 0,
+      "logo": "icons/304.png"
+    },
+    {
+      "id": 701,
+      "name": "OpenClaw API",
+      "category": "relay",
+      "tag": "new",
+      "description": "统一接入多种主流 AI 模型的 API 服务，提供集中充值与调用管理。",
+      "url": "https://openclaw-api.com/console/topup",
+      "views": 0,
+      "logo": "icons/701.jpg"
+    },
+    {
+      "id": 702,
+      "name": "APIKEY.FUN",
+      "category": "relay",
+      "tag": "new",
+      "description": "AI 模型 API 中转服务，提供统一密钥、订单与使用管理入口。",
+      "url": "https://apikey.fun/orders",
+      "views": 0,
+      "logo": "icons/702.png"
+    },
+    {
+      "id": 204,
+      "name": "MD → 微信",
+      "category": "blogger",
+      "tag": "new",
+      "description": "面向微信公众号内容创作的 Markdown 排版与转换工具。",
+      "url": "https://ilang.cn/md/",
+      "views": 0,
+      "logo": "icons/204.png"
     }
   ]
 }

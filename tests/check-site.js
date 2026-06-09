@@ -40,6 +40,13 @@ assert.match(app, /&amp;/);
 assert.match(app, /&lt;/);
 const data = JSON.parse(read('files/deals.json'));
 const resources = [...data.featured, ...data.items];
+assert.strictEqual(resources.length, 31);
+assert.deepStrictEqual(
+  resources.filter(item => [204, 304, 701, 702].includes(item.id)).map(item => item.name).sort(),
+  ['APIKEY.FUN', 'Link', 'MD → 微信', 'OpenClaw API'].sort(),
+);
+assert.strictEqual(resources.filter(item => item.category === 'relay').length, 2);
+assert.match(app, /key: 'relay', label: '中转站'/);
 assert.ok(resources.every(item => item.logo.startsWith('icons/')));
 assert.ok(resources.every(item => fs.existsSync(path.join(root, 'files', item.logo))));
 
